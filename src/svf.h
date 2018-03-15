@@ -1,3 +1,4 @@
+#pragma once
 // number of rings
 #define RING_SIZE 32
 #define EDGE_LENGTH 512
@@ -33,7 +34,7 @@ vector<int> calculate_T() {
 vector<double> calculate_SVF_max(const vector<int> &t) {
 	vector<double> res(EDGE_LENGTH, 0);
 	double n2 = 2 * EDGE_LENGTH;
-	for (int i = 0; i < EDGE_LENGTH; i++) {
+	for (int i = 0; i < t.size(); i++) {
 		res[i] = sin(M_PI*(2 * i + 1) / n2) / t[i];
 	}
 	return res;
@@ -41,6 +42,7 @@ vector<double> calculate_SVF_max(const vector<int> &t) {
 
 vector<int> calculate_P(unsigned char *data) {
 	vector<int> res(RING_SIZE, 0);
+
 	for (int i = 0; i < EDGE_LENGTH; i++) {
 		for (int j = 0; j < EDGE_LENGTH; j++) {
 			double d = sqrt(
@@ -62,19 +64,20 @@ vector<int> calculate_P(unsigned char *data) {
 double calculate_SVF(
 	const vector<double> &svf_max, const vector<int> &p) {
 	double SVF = 0;
-	for (int i = 0; i<EDGE_LENGTH; i++) {
+	for (int i = 0; i<p.size(); i++) {
 		SVF += svf_max[i] * p[i];
 	}
 	SVF *= M_PI / (2 * EDGE_LENGTH);
 	return SVF;
 }
 
-vector<int> t = calculate_T();
+vector<int> t;
 vector<double> svf_max;
 double t_total = 0;
 
 int init() {
-	for (int i = 0; i<EDGE_LENGTH; i++) {
+	t = calculate_T();
+	for (int i = 0; i<t.size(); i++) {
 		t_total += t[i];
 	}
 	svf_max = calculate_SVF_max(t);

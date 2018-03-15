@@ -12,11 +12,16 @@
 
 int main(int argc, char** argv) {
 	std::cout << argc << std::endl;
+	init();
 	if (argc > 1) {
 		std::cout << "input directory: "<< argv[0] << std::endl;
 		string output_string = "";
 		recursiveLoad(argv[1], argv[1], output_string);
-
+		std::ofstream myfile;
+		myfile.open("output.csv");
+		myfile << "lat,lng,tileX,tileY,svf1,svf2";
+		myfile << output_string << "\n";
+		myfile.close();
 		std::cout << std::endl;
 	}
 	else {

@@ -9,22 +9,12 @@
 #include<ctime>
 #include<utility>
 
-#include "compression.h"
+#include<SOIL2/SOIL2.h>
+
 #include "svf.h"
 
 using std::string;
 namespace fs = std::experimental::filesystem;
-
-static std::unordered_map<string, int> bin_postfix = {
-	{ "_0_0_f_c.bin", 12 },
-	{ "0_90_f_c.bin", 13 },
-	{ "_270_f_c.bin", 14 },
-	{ "90_0_f_c.bin", 13 },
-	{ "80_0_f_c.bin", 14 },
-	{ "70_0_f_c.bin",14 }
-};
-
-
 /* recursively read directories and read image or binary files
 to generate fisheye file. Para basepath is the base path of input.
 Inpath is the path of the current directory. Output is the output string.
@@ -57,26 +47,31 @@ int recursiveLoad(const string &basepath
 		}
 
 		string s = dir.path().string();
-		if (s.find("_f_c.bin") != string::npos) {
+		if (s.find("_f.png") != string::npos) {
 			if (s.length() < 12) continue;
 			string name = s.substr(
 				dir.path().parent_path().string().length(),
-				s.length() - bin_postfix[s.substr(s.length() - 12, 12)] - dir.path().parent_path().string().length()
+				s.length() - 6 - dir.path().parent_path().string().length()
 			);
-			string latlng = s.substr(
+			string tile = s.substr(
 				filepath.parent_path().string().length(),
 				dir.path().parent_path().string().length() - filepath.parent_path().string().length()
 			);
-			/*
-			one output file called CITY.csv next to the program (not the input or output folder).
+/* one output file called CITY.csv next to the program (not the input or output folder).
 The csv file should have the format:
-lat, lon, tileX, tileY, svf
-			*/
-			std::cout << "file name: " << name << " latlng: " << latlng << std::endl;
-			unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
-			std::cout << s << std::endl;
-			std::cout<<decompress(s, data, 512*512)<<" err"<<std::endl;
+lat, lon, tileX, tileY, svf*/
+			std::cout << "file name: " << name << " latlng: " << tile << std::endl;
+			unsigned char *data;
+			int imageWidth, imageHeight;
+			data = SOIL_load_image(&s[0], &imageWidth, &imageHeight, 0, SOIL_LOAD_RGBA);
+			std::cout << "load image: " << s << " image width: " << imageWidth << " image height: " << imageHeight << std::endl;
 			std::pair<double, double> p = calculate(data);
+			name[0] = '\n';
+			name[name.find('_')] = ',';
+			tile[0] = ',';
+			tile[tile.find('_')] = ',';
+			output = output + name + tile + "," + std::to_string(p.first) + "," + std::to_string(p.second);
+			SOIL_free_image_data(data);
 			res++;
 		}
 	}
