@@ -4,7 +4,7 @@
 #define EDGE_LENGTH 512
 #define HALF_LENGTH 256
 #define OFFSET 0.5
-#define RING_RADIUS 8
+#define RING_RADIUS 8.0
 
 #define _USE_MATH_DEFINES
 
@@ -52,8 +52,7 @@ vector<int> calculate_P(unsigned char *data) {
 			double ringIndex = floor(d / RING_RADIUS);
 			if (ringIndex < RING_SIZE) {
 				int pixel = (j*EDGE_LENGTH + i);
-				if ((int)data[pixel]==0) {
-					std::cout << "zero: " << data[pixel] << std::endl;
+				if (((int)data[pixel])==1) {
 					res[ringIndex]++;
 				}
 			}
