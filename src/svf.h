@@ -51,8 +51,9 @@ vector<int> calculate_P(unsigned char *data) {
 			);
 			double ringIndex = floor(d / RING_RADIUS);
 			if (ringIndex < RING_SIZE) {
-				int pixel = (j*EDGE_LENGTH + i) * 4;
-				if (data[pixel] > 128) {
+				int pixel = (j*EDGE_LENGTH + i);
+				if ((int)data[pixel]==0) {
+					std::cout << "zero: " << data[pixel] << std::endl;
 					res[ringIndex]++;
 				}
 			}

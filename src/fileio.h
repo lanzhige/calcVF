@@ -9,9 +9,8 @@
 #include<ctime>
 #include<utility>
 
-#include<SOIL2/SOIL2.h>
-
 #include "svf.h"
+#include "compression.h"
 
 using std::string;
 namespace fs = std::experimental::filesystem;
@@ -47,31 +46,36 @@ int recursiveLoad(const string &basepath
 		}
 
 		string s = dir.path().string();
-		if (s.find("_f.png") != string::npos) {
-			if (s.length() < 12) continue;
+		if (s.find("_0_90_f_c.bin") != string::npos) {
+			if (s.length() < 14) continue;
 			string name = s.substr(
 				dir.path().parent_path().string().length(),
-				s.length() - 6 - dir.path().parent_path().string().length()
+				s.length() - 13 - dir.path().parent_path().string().length()
 			);
 			string tile = s.substr(
 				filepath.parent_path().string().length(),
 				dir.path().parent_path().string().length() - filepath.parent_path().string().length()
 			);
-/* one output file called CITY.csv next to the program (not the input or output folder).
-The csv file should have the format:
-lat, lon, tileX, tileY, svf*/
-			std::cout << "file name: " << name << " latlng: " << tile << std::endl;
-			unsigned char *data;
-			int imageWidth, imageHeight;
-			data = SOIL_load_image(&s[0], &imageWidth, &imageHeight, 0, SOIL_LOAD_RGBA);
-			std::cout << "load image: " << s << " image width: " << imageWidth << " image height: " << imageHeight << std::endl;
+
+			unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
+			decompress(s, data, 512 * 512);
 			std::pair<double, double> p = calculate(data);
 			name[0] = '\n';
-			name[name.find('_')] = ',';
+			if (name.find('_') == string::npos) {
+				std::cout << "can't identify the LatLng of: " << name << std::endl;
+			}
+			else {
+				name[name.find('_')] = ',';
+			}
 			tile[0] = ',';
-			tile[tile.find('_')] = ',';
+			if (tile.find('_') == string::npos) {
+				std::cout << "can't identify tile of: " << tile << std::endl;
+			}
+			else {
+				tile[tile.find('_')] = ',';
+			}
 			output = output + name + tile + "," + std::to_string(p.first) + "," + std::to_string(p.second);
-			SOIL_free_image_data(data);
+			delete[] data;
 			res++;
 		}
 	}

@@ -1,16 +1,15 @@
 #include <iostream>
 
 #include "fileio.h"
-
-#if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
-#  include <fcntl.h>
-#  include <io.h>
-#  define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
-#else
-#  define SET_BINARY_MODE(file)
-#endif
+#include "compression.h"
 
 int main(int argc, char** argv) {
+	/*std::FILE *file_in, *file_out;
+	fopen_s(&file_in, "test.bin", "rb");
+	fopen_s(&file_out, "output.bin", "w+");
+	unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
+	decompress("./test.bin", data, 512*512);
+	inf(file_in, file_out);*/
 	std::cout << argc << std::endl;
 	init();
 	if (argc > 1) {
@@ -30,6 +29,11 @@ int main(int argc, char** argv) {
 		std::cin >> s;
 		string output_string = "";
 		recursiveLoad(s, s, output_string);
+		std::ofstream myfile;
+		myfile.open("output.csv");
+		myfile << "lat,lng,tileX,tileY,svf1,svf2";
+		myfile << output_string << "\n";
+		myfile.close();
 	}
 	return 0;
 }
