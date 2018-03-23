@@ -90,7 +90,6 @@ int decompress(const string& inpath, unsigned char *out, int size) {
 	z_stream strm;
     unsigned char *in;
 	std::FILE *source;
-	std::cout << &inpath[0] << std::endl;
 	fopen_s(&source, &inpath[0], "rb");
 	if (source == nullptr) {
 		std::cerr << "error in reading compressed binary: " << inpath << std::endl;

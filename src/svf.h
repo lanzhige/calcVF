@@ -32,9 +32,9 @@ vector<int> calculate_T() {
 }
 
 vector<double> calculate_SVF_max(const vector<int> &t) {
-	vector<double> res(EDGE_LENGTH, 0);
-	double n2 = 2 * EDGE_LENGTH;
-	for (int i = 0; i < t.size(); i++) {
+	vector<double> res(RING_SIZE, 0);
+	double n2 = 2 * RING_SIZE;
+	for (int i = 0; i < RING_SIZE; i++) {
 		res[i] = sin(M_PI*(2 * i + 1) / n2) / t[i];
 	}
 	return res;
@@ -53,7 +53,7 @@ vector<int> calculate_P(unsigned char *data) {
 			if (ringIndex < RING_SIZE) {
 				int pixel = (j*EDGE_LENGTH + i);
 				if (((int)data[pixel])==1) {
-					res[ringIndex]++;
+					res[(int)ringIndex]++;
 				}
 			}
 		}
@@ -64,10 +64,10 @@ vector<int> calculate_P(unsigned char *data) {
 double calculate_SVF(
 	const vector<double> &svf_max, const vector<int> &p) {
 	double SVF = 0;
-	for (int i = 0; i<p.size(); i++) {
+	for (int i = 0; i<RING_SIZE; i++) {
 		SVF += svf_max[i] * p[i];
 	}
-	SVF *= M_PI / (2 * EDGE_LENGTH);
+	SVF *= M_PI / (2 * RING_SIZE);
 	return SVF;
 }
 

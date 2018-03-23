@@ -14,6 +14,7 @@
 
 using std::string;
 namespace fs = std::experimental::filesystem;
+
 /* recursively read directories and read image or binary files
 to generate fisheye file. Para basepath is the base path of input.
 Inpath is the path of the current directory. Output is the output string.
@@ -60,21 +61,21 @@ int recursiveLoad(const string &basepath
 			unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
 			decompress(s, data, 512 * 512);
 			std::pair<double, double> p = calculate(data);
-			name[0] = '\n';
+			name[0] = ',';
 			if (name.find('_') == string::npos) {
-				std::cout << "can't identify the LatLng of: " << name << std::endl;
+				std::cerr << "can't identify the LatLng of: " << name << std::endl;
 			}
 			else {
 				name[name.find('_')] = ',';
 			}
-			tile[0] = ',';
+			tile[0] = '\n';
 			if (tile.find('_') == string::npos) {
-				std::cout << "can't identify tile of: " << tile << std::endl;
+				std::cerr << "can't identify tile of: " << tile << std::endl;
 			}
 			else {
 				tile[tile.find('_')] = ',';
 			}
-			output = output + name + tile + "," + std::to_string(p.first) + "," + std::to_string(p.second);
+			output = output + tile + name + "," + std::to_string(p.first);
 			delete[] data;
 			res++;
 		}
