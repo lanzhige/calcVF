@@ -1,4 +1,4 @@
-git clone git@github.com:lanzhige/calcSVF.git
+git clone https://github.com/lanzhige/calcSVF.git
 cd ./calcSVF
 mkdir -p ./build
 cd ./build
