@@ -8,6 +8,7 @@
 #include<unordered_map>
 #include<ctime>
 #include<utility>
+#include<unordered_map>
 
 #include "svf.h"
 #include "compression.h"
@@ -81,4 +82,56 @@ int recursiveLoad(const string &basepath
 		}
 	}
 	return res;
+}
+
+void loadFile(const string &inpath, string &output) {
+	fs::path filepath(inpath);
+	//record the time and tasks processed
+	std::clock_t start;
+	double duration;
+	start = std::clock();
+	int count = 0;
+
+	//don't process redundant
+	unordered_map<string, bool> hmap;
+
+	for (auto &dir : fs::recursive_directory_iterator(inpath)) {
+		if (!fs::is_directory(dir)) {
+			string s = dir.path().filename().string();
+			if (s.find("_0_90_f_c.bin") != string::npos) {
+				if (s.length() < 14) continue;
+				if (hmap.find(s) != hmap.end()) continue;
+				hmap[s] = true;
+				string name = s.substr(
+					dir.path().parent_path().string().length(),
+					s.length() - 13 - dir.path().parent_path().string().length()
+				);
+				string tile = s.substr(
+					filepath.parent_path().string().length(),
+					dir.path().parent_path().string().length() - filepath.parent_path().string().length()
+				);
+
+				unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
+				decompress(s, data, 512 * 512);
+				std::pair<double, double> p = calculate(data);
+				name[0] = ',';
+				if (name.find('_') == string::npos) {
+					std::cerr << "can't identify the LatLng of: " << name << std::endl;
+				}
+				else {
+					name[name.find('_')] = ',';
+				}
+				tile[0] = '\n';
+				if (tile.find('_') == string::npos) {
+					std::cerr << "can't identify tile of: " << tile << std::endl;
+				}
+				else {
+					tile[tile.find('_')] = ',';
+				}
+				output = output + tile + name + "," + std::to_string(p.first);
+				delete[] data;
+				count++;
+			}
+		}
+	}
 }

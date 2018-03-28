@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
 	if (argc > 2) {
 		std::cout << "input directory: " << argv[0] << std::endl;
 		string output_string = "";
-		recursiveLoad(argv[1], argv[1], output_string);
+		loadFile(argv[1], output_string);
 		std::ofstream myfile;
 		string outname(argv[2]);
 		if (outname.find(".csv") == string::npos) {
@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 	else if (argc > 1) {
 		std::cout << "input directory: "<< argv[0] << std::endl;
 		string output_string = "";
-		recursiveLoad(argv[1], argv[1], output_string);
+		loadFile(argv[1], output_string);
 		std::ofstream myfile;
 		myfile.open("output.csv");
 		myfile << "tileX,tileY,lat,lon,SVF";
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 		std::string s;
 		std::cin >> s;
 		string output_string = "";
-		recursiveLoad(s, s, output_string);
+		loadFile(s, output_string);
 		std::ofstream myfile;
 		myfile.open("output.csv");
 		myfile << "tileX,tileY,lat,lon,SVF";
