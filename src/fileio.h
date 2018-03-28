@@ -95,43 +95,46 @@ void loadFile(const string &inpath, string &output) {
 	//don't process redundant
 	unordered_map<string, bool> hmap;
 
-	for (auto &dir : fs::recursive_directory_iterator(inpath)) {
+	for (auto &dir : fs::recursive_directory_iterator(filepath)) {
 		if (!fs::is_directory(dir)) {
-			string s = dir.path().filename().string();
+			string s = dir.path().string();
 			if (s.find("_0_90_f_c.bin") != string::npos) {
 				if (s.length() < 14) continue;
-				if (hmap.find(s) != hmap.end()) continue;
-				hmap[s] = true;
-				string name = s.substr(
-					dir.path().parent_path().string().length(),
-					s.length() - 13 - dir.path().parent_path().string().length()
+				
+				string tile_name = s.substr(
+					dir.path().parent_path().parent_path().string().length(),
+					s.length() - 13 - dir.path().parent_path().parent_path().string().length()
 				);
-				string tile = s.substr(
-					filepath.parent_path().string().length(),
-					dir.path().parent_path().string().length() - filepath.parent_path().string().length()
-				);
+				if (hmap.find(tile_name) != hmap.end()) continue;
+				hmap[tile_name] = true;
 
 				unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
 				decompress(s, data, 512 * 512);
 				std::pair<double, double> p = calculate(data);
-				name[0] = ',';
-				if (name.find('_') == string::npos) {
-					std::cerr << "can't identify the LatLng of: " << name << std::endl;
+				tile_name[0] = '\n';
+				if (tile_name.find('_') == string::npos) {
+					std::cerr << "can't identify the LatLng of: " << tile_name << std::endl;
 				}
 				else {
-					name[name.find('_')] = ',';
+					while (tile_name.find('_') != string::npos) {
+						tile_name[tile_name.find('_')] = ',';
+					}
 				}
-				tile[0] = '\n';
-				if (tile.find('_') == string::npos) {
-					std::cerr << "can't identify tile of: " << tile << std::endl;
+				if (tile_name.find('\\') != string::npos) {
+					tile_name[tile_name.find('\\')] = ',';
 				}
-				else {
-					tile[tile.find('_')] = ',';
+				if (tile_name.find('/') != string::npos) {
+					tile_name[tile_name.find('/')] = ',';
 				}
-				output = output + tile + name + "," + std::to_string(p.first);
+				output = output + tile_name + "," + std::to_string(p.first);
 				delete[] data;
 				count++;
 			}
 		}
 	}
+
+	duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+	std::cout << "Finished processing files in folder " << inpath
+		<< ". Time used: " << duration
+		<< ". Files processed: " << count << "." << std::endl;
 }

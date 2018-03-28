@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
 	std::cout << argc << std::endl;
 	init();
 	if (argc > 2) {
-		std::cout << "input directory: " << argv[0] << std::endl;
+		std::cout << "input directory: " << argv[1] << std::endl;
 		string output_string = "";
 		loadFile(argv[1], output_string);
 		std::ofstream myfile;
@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 		std::cout << std::endl;
 	}
 	else if (argc > 1) {
-		std::cout << "input directory: "<< argv[0] << std::endl;
+		std::cout << "input directory: "<< argv[1] << std::endl;
 		string output_string = "";
 		loadFile(argv[1], output_string);
 		std::ofstream myfile;
