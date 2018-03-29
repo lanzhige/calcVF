@@ -63,32 +63,37 @@ int recursiveLoad(const string &basepath
 		string s = dir.path().string();
 		if (s.find("_0_90_f_c.bin") != string::npos) {
 			if (s.length() < 14) continue;
-			string tile_name = s.substr(
-				dir.path().parent_path().parent_path().string().length(),
-				s.length() - 13 - dir.path().parent_path().parent_path().string().length()
+			string name = s.substr(
+				dir.path().parent_path().string().length(),
+				s.length() - 13 - dir.path().parent_path().string().length()
 			);
-			if (hmap.find(tile_name) != hmap.end()) continue;
-			hmap[tile_name] = true;
+
+			if (hmap.find(name) != hmap.end()) continue;
+			hmap[name] = true;
+
+			string tile = s.substr(
+				filepath.parent_path().string().length(),
+				dir.path().parent_path().string().length() - filepath.parent_path().string().length()
+			);
 
 			unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
 			decompress(s, data, 512 * 512);
 			std::pair<double, double> p = calculate(data);
-			tile_name[0] = '\n';
-			if (tile_name.find('_') == string::npos) {
-				std::cerr << "can't identify the LatLng of: " << tile_name << std::endl;
+			name[0] = ',';
+			if (name.find('_') == string::npos) {
+				std::cerr << "can't identify the LatLng of: " << name << std::endl;
 			}
 			else {
-				while (tile_name.find('_') != string::npos) {
-					tile_name[tile_name.find('_')] = ',';
-				}
+				name[name.find('_')] = ',';
 			}
-			if (tile_name.find('\\') != string::npos) {
-				tile_name[tile_name.find('\\')] = ',';
+			tile[0] = '\n';
+			if (tile.find('_') == string::npos) {
+				std::cerr << "can't identify tile of: " << tile << std::endl;
 			}
-			if (tile_name.find('/') != string::npos) {
-				tile_name[tile_name.find('/')] = ',';
+			else {
+				tile[tile.find('_')] = ',';
 			}
-			output = output + tile_name + "," + std::to_string(p.first);
+			output = output + tile + name + "," + std::to_string(p.first);
 			delete[] data;
 			res++;
 		}
