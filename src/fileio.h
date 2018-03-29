@@ -16,6 +16,8 @@
 using std::string;
 namespace fs = std::experimental::filesystem;
 
+unordered_map<string, bool> hmap;
+
 /* recursively read directories and read image or binary files
 to generate fisheye file. Para basepath is the base path of input.
 Inpath is the path of the current directory. Output is the output string.
@@ -30,53 +32,63 @@ int recursiveLoad(const string &basepath
 	string curDir = filepath.string();
 
 	int res = 0;
+	int total_dir = 0;
+	for (auto &dir : fs::directory_iterator(filepath)) {
+		if (fs::is_directory(dir)) {
+			total_dir++;
+		}
+	}
+
+	int dir_count = 0;
 
 	for (auto &dir : fs::directory_iterator(filepath)) {
 		if (fs::is_directory(dir)) {
 			string temp = dir.path().string();
-			std::cout << "Start processing files in folder: "
-				<< temp << std::endl;
+			/*std::cout << "Start processing files in folder: "
+				<< temp << std::endl;*/
 			std::clock_t start;
 			double duration;
 			start = std::clock();
 			int count = recursiveLoad(basepath, temp, output);
 			duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-			std::cout << "Finished processing files in folder " << temp
-				<< ". Time used: " << duration
-				<< ". Files processed: " << count << "." << std::endl;
+			dir_count++;
+			std::cout << "Finished processing files in folder " << temp << std::endl;
+			std::cout << ". Time used: " << duration
+				<< ". Files processed: " << count << ". " 
+				<< "Folder processed: "<<dir_count<<"/"<<total_dir
+				<< std::endl;
 			continue;
 		}
 
 		string s = dir.path().string();
 		if (s.find("_0_90_f_c.bin") != string::npos) {
 			if (s.length() < 14) continue;
-			string name = s.substr(
-				dir.path().parent_path().string().length(),
-				s.length() - 13 - dir.path().parent_path().string().length()
+			string tile_name = s.substr(
+				dir.path().parent_path().parent_path().string().length(),
+				s.length() - 13 - dir.path().parent_path().parent_path().string().length()
 			);
-			string tile = s.substr(
-				filepath.parent_path().string().length(),
-				dir.path().parent_path().string().length() - filepath.parent_path().string().length()
-			);
+			if (hmap.find(tile_name) != hmap.end()) continue;
+			hmap[tile_name] = true;
 
 			unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
 			decompress(s, data, 512 * 512);
 			std::pair<double, double> p = calculate(data);
-			name[0] = ',';
-			if (name.find('_') == string::npos) {
-				std::cerr << "can't identify the LatLng of: " << name << std::endl;
+			tile_name[0] = '\n';
+			if (tile_name.find('_') == string::npos) {
+				std::cerr << "can't identify the LatLng of: " << tile_name << std::endl;
 			}
 			else {
-				name[name.find('_')] = ',';
+				while (tile_name.find('_') != string::npos) {
+					tile_name[tile_name.find('_')] = ',';
+				}
 			}
-			tile[0] = '\n';
-			if (tile.find('_') == string::npos) {
-				std::cerr << "can't identify tile of: " << tile << std::endl;
+			if (tile_name.find('\\') != string::npos) {
+				tile_name[tile_name.find('\\')] = ',';
 			}
-			else {
-				tile[tile.find('_')] = ',';
+			if (tile_name.find('/') != string::npos) {
+				tile_name[tile_name.find('/')] = ',';
 			}
-			output = output + tile + name + "," + std::to_string(p.first);
+			output = output + tile_name + "," + std::to_string(p.first);
 			delete[] data;
 			res++;
 		}
