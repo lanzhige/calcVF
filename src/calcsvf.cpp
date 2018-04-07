@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 			outname = outname + ".csv";
 		}
 		myfile.open(&outname[0]);
-		myfile << "tileX,tileY,lat,lon,SVF";
+		myfile << "MapTile-x,MapTile-y,Latitude,Longitude,SVF_N,TVF_N,BVF_N,IVF_N,PVF_N,MOVF_N,SVF_Down,TVF_Down,BVF_Down,IVF_Down,PVF_Down,MOVF_Down,SVF_Up,TVF_Up,BVF_Up,IVF_Up,PVF_Up,MOVF_Up,SVF_S,TVF_S,BVF_S,IVF_S,PVF_S,MOVF_S,SVF_W,TVF_W,BVF_W,IVF_W,PVF_W,MOVF_W,SVF_E,TVF_E,BVF_E,IVF_E,PVF_E,MOVF_E";
 		myfile << output_string << "\n";
 		myfile.close();
 		std::cout << std::endl;

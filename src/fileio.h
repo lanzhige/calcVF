@@ -18,6 +18,24 @@ namespace fs = std::experimental::filesystem;
 
 unordered_map<string, bool> hmap;
 
+static std::unordered_map<string, int> bin_postfix = {
+	{ "_0_0_f_c.bin", 12 },
+	{ "0_90_f_c.bin", 13 },
+	{ "_270_f_c.bin", 14 },
+	{ "90_0_f_c.bin", 13 },
+	{ "80_0_f_c.bin", 14 },
+	{ "70_0_f_c.bin",14 }
+};
+
+const string postfix[6] = {
+	"_0_0_f_c.bin",    //north
+	"_0_270_f_c.bin",  //down
+	"_0_90_f_c.bin",   //up
+	"_180_0_f_c.bin",  //south
+	"_270_0_f_c.bin",  //west
+	"_90_0_f_c.bin",   //east
+};
+
 /* recursively read directories and read image or binary files
 to generate fisheye file. Para basepath is the base path of input.
 Inpath is the path of the current directory. Output is the output string.
@@ -63,6 +81,10 @@ int recursiveLoad(const string &basepath
 		string s = dir.path().string();
 		if (s.find("_0_90_f_c.bin") != string::npos) {
 			if (s.length() < 14) continue;
+			string file_name_path = s.substr(
+				0, s.length() - bin_postfix[s.substr(s.length() - 12, 12)]
+			);
+
 			string name = s.substr(
 				dir.path().parent_path().string().length(),
 				s.length() - 13 - dir.path().parent_path().string().length()
@@ -77,8 +99,6 @@ int recursiveLoad(const string &basepath
 			);
 
 			unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
-			decompress(s, data, 512 * 512);
-			std::pair<double, double> p = calculate(data);
 			name[0] = ',';
 			if (name.find('_') == string::npos) {
 				std::cerr << "can't identify the LatLng of: " << name << std::endl;
@@ -93,14 +113,23 @@ int recursiveLoad(const string &basepath
 			else {
 				tile[tile.find('_')] = ',';
 			}
-			output = output + tile + name + "," + std::to_string(p.first);
+
+			output = output + tile + name;
+
+			for (int i = 0; i < 6; i++) {
+				string data_path = file_name_path + postfix[i];
+				decompress(data_path, data, 512 * 512);
+				string vf = calculate(data);
+
+				output = output + vf;
+			}
 			delete[] data;
 			res++;
 		}
 	}
 	return res;
 }
-
+/*
 void loadFile(const string &inpath, string &output) {
 	fs::path filepath(inpath);
 	//record the time and tasks processed
@@ -115,9 +144,9 @@ void loadFile(const string &inpath, string &output) {
 	for (auto &dir : fs::recursive_directory_iterator(filepath)) {
 		if (!fs::is_directory(dir)) {
 			string s = dir.path().string();
-			if (s.find("_0_90_f_c.bin") != string::npos) {
-				if (s.length() < 14) continue;
-				
+			if (s.length() < 12) continue;
+			string postfix = s.substr(s.length()-12, 12);
+			if (bin_postfix.find(postfix)!=bin_postfix.end()) {
 				string tile_name = s.substr(
 					dir.path().parent_path().parent_path().string().length(),
 					s.length() - 13 - dir.path().parent_path().parent_path().string().length()
@@ -155,3 +184,4 @@ void loadFile(const string &inpath, string &output) {
 		<< ". Time used: " << duration
 		<< ". Files processed: " << count << "." << std::endl;
 }
+*/
