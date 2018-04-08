@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(calcSVF)
+project(calcVF)
 
 #find_package(OpenGL REQUIRED)
 #find_package(GLUT REQUIRED)

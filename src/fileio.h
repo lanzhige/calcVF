@@ -10,7 +10,7 @@
 #include<utility>
 #include<unordered_map>
 
-#include "svf.h"
+#include "vf.h"
 #include "compression.h"
 
 using std::string;
