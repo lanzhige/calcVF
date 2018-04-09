@@ -41,7 +41,7 @@ to generate fisheye file. Para basepath is the base path of input.
 Inpath is the path of the current directory. Output is the output string.
 */
 int recursiveLoad(const string &basepath
-	, const string& inpath, string &output) {
+	, const string& inpath, std::ofstream &myfile) {
 	fs::path filepath(inpath);
 	string inDir;
 	fs::path base(basepath);
@@ -67,7 +67,7 @@ int recursiveLoad(const string &basepath
 			std::clock_t start;
 			double duration;
 			start = std::clock();
-			int count = recursiveLoad(basepath, temp, output);
+			int count = recursiveLoad(basepath, temp, myfile);
 			duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 			dir_count++;
 			std::cout << "Finished processing files in folder " << temp << std::endl;
@@ -80,7 +80,6 @@ int recursiveLoad(const string &basepath
 
 		string s = dir.path().string();
 		if (s.find("_0_90_f_c.bin") != string::npos) {
-			if (s.length() < 14) continue;
 			string file_name_path = s.substr(
 				0, s.length() - bin_postfix[s.substr(s.length() - 12, 12)]
 			);
@@ -92,6 +91,7 @@ int recursiveLoad(const string &basepath
 
 			if (hmap.find(name) != hmap.end()) continue;
 			hmap[name] = true;
+			std::cout << name << std::endl;
 
 			string tile = s.substr(
 				filepath.parent_path().string().length(),
@@ -114,7 +114,7 @@ int recursiveLoad(const string &basepath
 				tile[tile.find('_')] = ',';
 			}
 
-			output = output + tile + name;
+			string output = tile + name;
 
 			for (int i = 0; i < 6; i++) {
 				string data_path = file_name_path + postfix[i];
@@ -123,65 +123,10 @@ int recursiveLoad(const string &basepath
 
 				output = output + vf;
 			}
+			myfile << output;
 			delete[] data;
 			res++;
 		}
 	}
 	return res;
 }
-/*
-void loadFile(const string &inpath, string &output) {
-	fs::path filepath(inpath);
-	//record the time and tasks processed
-	std::clock_t start;
-	double duration;
-	start = std::clock();
-	int count = 0;
-
-	//don't process redundant
-	unordered_map<string, bool> hmap;
-
-	for (auto &dir : fs::recursive_directory_iterator(filepath)) {
-		if (!fs::is_directory(dir)) {
-			string s = dir.path().string();
-			if (s.length() < 12) continue;
-			string postfix = s.substr(s.length()-12, 12);
-			if (bin_postfix.find(postfix)!=bin_postfix.end()) {
-				string tile_name = s.substr(
-					dir.path().parent_path().parent_path().string().length(),
-					s.length() - 13 - dir.path().parent_path().parent_path().string().length()
-				);
-				if (hmap.find(tile_name) != hmap.end()) continue;
-				hmap[tile_name] = true;
-
-				unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
-				decompress(s, data, 512 * 512);
-				std::pair<double, double> p = calculate(data);
-				tile_name[0] = '\n';
-				if (tile_name.find('_') == string::npos) {
-					std::cerr << "can't identify the LatLng of: " << tile_name << std::endl;
-				}
-				else {
-					while (tile_name.find('_') != string::npos) {
-						tile_name[tile_name.find('_')] = ',';
-					}
-				}
-				if (tile_name.find('\\') != string::npos) {
-					tile_name[tile_name.find('\\')] = ',';
-				}
-				if (tile_name.find('/') != string::npos) {
-					tile_name[tile_name.find('/')] = ',';
-				}
-				output = output + tile_name + "," + std::to_string(p.first);
-				delete[] data;
-				count++;
-			}
-		}
-	}
-
-	duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-	std::cout << "Finished processing files in folder " << inpath
-		<< ". Time used: " << duration
-		<< ". Files processed: " << count << "." << std::endl;
-}
-*/

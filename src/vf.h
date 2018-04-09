@@ -42,48 +42,6 @@ vector<double> calculate_SVF_max(const vector<int> &t) {
 	return res;
 }
 
-/*vector<int> calculate_P(unsigned char *data) {
-	vector<int> res(RING_SIZE, 0);
-
-	for (int i = 0; i < EDGE_LENGTH; i++) {
-		for (int j = 0; j < EDGE_LENGTH; j++) {
-			double d = sqrt(
-				(i + OFFSET - HALF_LENGTH)*(i + OFFSET - HALF_LENGTH)
-				+ (j + OFFSET - HALF_LENGTH)*(j + OFFSET - HALF_LENGTH)
-			);
-			double ringIndex = floor(d / RING_RADIUS);
-			if (ringIndex < RING_SIZE) {
-				int pixel = (j*EDGE_LENGTH + i);
-				if (((int)data[pixel])==1) {
-					res[(int)ringIndex]++;
-				}
-			}
-		}
-	}
-	return res;
-}
-
-vector<int> calculate_P(unsigned char *data, int k) {
-	vector<int> res(RING_SIZE, 0);
-
-	for (int i = 0; i < EDGE_LENGTH; i++) {
-		for (int j = 0; j < EDGE_LENGTH; j++) {
-			double d = sqrt(
-				(i + OFFSET - HALF_LENGTH)*(i + OFFSET - HALF_LENGTH)
-				+ (j + OFFSET - HALF_LENGTH)*(j + OFFSET - HALF_LENGTH)
-			);
-			double ringIndex = floor(d / RING_RADIUS);
-			if (ringIndex < RING_SIZE) {
-				int pixel = (j*EDGE_LENGTH + i);
-				if (((int)data[pixel]) == k) {
-					res[(int)ringIndex]++;
-				}
-			}
-		}
-	}
-	return res;
-}*/
-
 vector<vector<int>> calculate_P(unsigned char *data) {
 	vector<vector<int>> res(6, vector<int>(RING_SIZE, 0));
 
@@ -128,18 +86,6 @@ int init() {
 
 	return 0;
 }
-/*
-pair<double, double> calculate(unsigned char *data) {
-	vector<int> p = calculate_P(data);
-	double SVF1 = calculate_SVF(svf_max, p);
-	double p_total = 0;
-	for (int i = 0; i<p.size(); i++) {
-		p_total += p[i];
-	}
-	double SVF2 = p_total / t_total;
-	return { SVF1, SVF2 };
-}
-*/
 
 string calculate(unsigned char *data) {
 	string res = "";
