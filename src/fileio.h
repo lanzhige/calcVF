@@ -91,7 +91,6 @@ int recursiveLoad(const string &basepath
 
 			if (hmap.find(name) != hmap.end()) continue;
 			hmap[name] = true;
-			std::cout << name << std::endl;
 
 			string tile = s.substr(
 				filepath.parent_path().string().length(),
