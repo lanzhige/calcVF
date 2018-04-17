@@ -59,6 +59,8 @@ int recursiveLoad(const string &basepath
 
 	int dir_count = 0;
 
+	string output = "";
+
 	for (auto &dir : fs::directory_iterator(filepath)) {
 		if (fs::is_directory(dir)) {
 			string temp = dir.path().string();
@@ -113,7 +115,7 @@ int recursiveLoad(const string &basepath
 				tile[tile.find('_')] = ',';
 			}
 
-			string output = tile + name;
+			output = tile + name;
 
 			for (int i = 0; i < 6; i++) {
 				string data_path = file_name_path + postfix[i];
@@ -122,10 +124,10 @@ int recursiveLoad(const string &basepath
 
 				output = output + vf;
 			}
-			myfile << output;
 			delete[] data;
 			res++;
 		}
 	}
+	myfile << output;
 	return res;
 }
