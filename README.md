@@ -1,7 +1,15 @@
-# calcSVF
+# calcVF
 run install.sh to install executable program under currenct directory.
 
-Instruction of use:
-calcSVF.exe BINARY_FILE_FOLDER_DIR
+## Instruction:
 
+### Fisheye Input:
+```
+calcVF.exe -f [$Input_Root}] [$Output_root]
+```
+
+### Segmented Input:
+```
+calcVF.exe -i [$Input_Root] [$Output_root]
+```
 need cmake and c++17 support for compiling the source code
