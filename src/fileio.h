@@ -43,7 +43,7 @@ to generate fisheye file. Para basepath is the base path of input.
 Inpath is the path of the current directory. Output is the output string.
 */
 int recursiveLoad(const string &basepath
-	, const string& inpath, std::ofstream &myfile, Fisheye &fisheye) {
+	, const string& inpath, std::string &outname, Fisheye &fisheye) {
 	fs::path filepath(inpath);
 	string inDir;
 	fs::path base(basepath);
@@ -71,7 +71,7 @@ int recursiveLoad(const string &basepath
 			std::clock_t start;
 			double duration;
 			start = std::clock();
-			int count = recursiveLoad(basepath, temp, myfile, fisheye);
+			int count = recursiveLoad(basepath, temp, outname, fisheye);
 			duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 			dir_count++;
 			std::cout << "Finished processing files in folder " << temp << std::endl;
@@ -117,8 +117,7 @@ int recursiveLoad(const string &basepath
 				tile[tile.find('_')] = ',';
 			}
 
-			output = tile + name;
-
+			output += tile + name;
 			fisheye.getVF(file_name_path, data, output);
 
 			/*for (int i = 0; i < 6; i++) {
@@ -129,11 +128,15 @@ int recursiveLoad(const string &basepath
 				output = output + vf;
 			}*/
 			res++;
-
-			myfile << output;
 		}
 
 		delete[] data;
+	}
+	if (output.size() > 0) {
+		std::ofstream myfile;
+		myfile.open(&outname[0], std::ofstream::app | std::ofstream::out);
+		myfile << output;
+		myfile.close();
 	}
 	return res;
 }

@@ -194,7 +194,7 @@ public:
 
 			glReadnPixels(0, 0, WIDTH, HEIGHT, GL_RED, GL_UNSIGNED_BYTE
 				, WIDTH * HEIGHT * sizeof(unsigned char), data);
-			output = output + calculate(data);
+			output += calculate(data);
 
 			glfwSwapBuffers(window);
 		}
