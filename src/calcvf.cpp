@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 					myfile.open(&outname[0]);
 					myfile.close();
 					myfile << "MapTile-x,MapTile-y,Latitude,Longitude,SVF_Up,TVF_Up,BVF_Up,IVF_Up,PVF_Up,MOVF_Up,SVF_Down,TVF_Down,BVF_Down,IVF_Down,PVF_Down,MOVF_Down,SVF_N,TVF_N,BVF_N,IVF_N,PVF_N,MOVF_N,SVF_S,TVF_S,BVF_S,IVF_S,PVF_S,MOVF_S,SVF_E,TVF_E,BVF_E,IVF_E,PVF_E,MOVF_E,SVF_W,TVF_W,BVF_W,IVF_W,PVF_W,MOVF_W";
-					recursiveLoad(argv[2], argv[2], myfile);
+					recursiveLoad(argv[2], argv[2], outname);
 					myfile.open(&outname[0], std::ofstream::app | std::ofstream::out);
 					myfile << "\n";
 					myfile.close();
@@ -76,7 +76,8 @@ int main(int argc, char** argv) {
 					myfile.open("output.csv");
 					myfile << "MapTile-x,MapTile-y,Latitude,Longitude,SVF_Up,TVF_Up,BVF_Up,IVF_Up,PVF_Up,MOVF_Up,SVF_Down,TVF_Down,BVF_Down,IVF_Down,PVF_Down,MOVF_Down,SVF_N,TVF_N,BVF_N,IVF_N,PVF_N,MOVF_N,SVF_S,TVF_S,BVF_S,IVF_S,PVF_S,MOVF_S,SVF_E,TVF_E,BVF_E,IVF_E,PVF_E,MOVF_E,SVF_W,TVF_W,BVF_W,IVF_W,PVF_W,MOVF_W";
 					myfile.close();
-					recursiveLoad(argv[2], argv[2], myfile);
+					string outname = "output.csv";
+					recursiveLoad(argv[2], argv[2], outname);
 					myfile.open("output.csv", std::ofstream::app | std::ofstream::out);
 					myfile << "\n";
 					myfile.close();
@@ -90,7 +91,8 @@ int main(int argc, char** argv) {
 					myfile.open("output.csv");
 					myfile << "MapTile-x,MapTile-y,Latitude,Longitude,SVF_Up,TVF_Up,BVF_Up,IVF_Up,PVF_Up,MOVF_Up,SVF_Down,TVF_Down,BVF_Down,IVF_Down,PVF_Down,MOVF_Down,SVF_N,TVF_N,BVF_N,IVF_N,PVF_N,MOVF_N,SVF_S,TVF_S,BVF_S,IVF_S,PVF_S,MOVF_S,SVF_E,TVF_E,BVF_E,IVF_E,PVF_E,MOVF_E,SVF_W,TVF_W,BVF_W,IVF_W,PVF_W,MOVF_W";
 					myfile.close();
-					recursiveLoad(s, s, myfile);
+					string outname = "output.csv";
+					recursiveLoad(s, s, outname);
 					myfile.open("output.csv", std::ofstream::app | std::ofstream::out);
 					myfile << "\n";
 					myfile.close();

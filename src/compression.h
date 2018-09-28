@@ -119,8 +119,11 @@ int decompress(const string& inpath, unsigned char *out, int size) {
 	/* decompress until deflate stream ends or end of file */
 	do {
 		if ((strm.avail_in = fread(in, 1, lSize, source)) != lSize) {
-			std::cerr << "reading error" << std::endl;
-			return -3;
+			std::cout << "lSize: " << lSize << std::endl;
+			std::cout << "strm available in: " << strm.avail_in << std::endl;
+			std::cout << "dir: " << inpath << std::endl;
+			//std::cerr << "reading error" << std::endl;
+			//return -3;
 		}
 		if (ferror(source)) {
 			(void)inflateEnd(&strm);

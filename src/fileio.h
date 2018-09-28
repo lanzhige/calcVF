@@ -63,6 +63,8 @@ int recursiveLoad(const string &basepath
 
 	string output = "";
 
+	unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
+
 	for (auto &dir : fs::directory_iterator(filepath)) {
 		if (fs::is_directory(dir)) {
 			string temp = dir.path().string();
@@ -83,7 +85,6 @@ int recursiveLoad(const string &basepath
 		}
 
 		string s = dir.path().string();
-		unsigned char *data = (unsigned char *)malloc(512 * 512 * sizeof(unsigned char));
 		if (s.find("_0_90.bin") != string::npos) {
 			string file_name_path = s.substr(
 				0, s.length() - bin_postfix[s.substr(s.length() - 8, 8)]
@@ -116,7 +117,6 @@ int recursiveLoad(const string &basepath
 			else {
 				tile[tile.find('_')] = ',';
 			}
-
 			output += tile + name;
 			fisheye.getVF(file_name_path, data, output);
 
@@ -130,8 +130,10 @@ int recursiveLoad(const string &basepath
 			res++;
 		}
 
-		delete[] data;
 	}
+
+	delete[] data;
+
 	if (output.size() > 0) {
 		std::ofstream myfile;
 		myfile.open(&outname[0], std::ofstream::app | std::ofstream::out);
@@ -160,7 +162,7 @@ const string postfix_fc[6] = {
 };
 
 int recursiveLoad(const string &basepath
-	, const string& inpath, std::ofstream &myfile) {
+	, const string& inpath, std::string &outname) {
 	fs::path filepath(inpath);
 	string inDir;
 	fs::path base(basepath);
@@ -188,7 +190,7 @@ int recursiveLoad(const string &basepath
 			std::clock_t start;
 			double duration;
 			start = std::clock();
-			int count = recursiveLoad(basepath, temp, myfile);
+			int count = recursiveLoad(basepath, temp, outname);
 			duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 			dir_count++;
 			std::cout << "Finished processing files in folder " << temp << std::endl;
@@ -234,7 +236,7 @@ int recursiveLoad(const string &basepath
 				tile[tile.find('_')] = ',';
 			}
 
-			output = tile + name;
+			output += tile + name;
 
 			for (int i = 0; i < 6; i++) {
 				string data_path = file_name_path + postfix_fc[i];
@@ -243,11 +245,17 @@ int recursiveLoad(const string &basepath
 
 				output = output + vf;
 			}
-
-			myfile << output;
+			
 			delete[] data;
 			res++;
 		}
 	}
+	if (output.size() > 0) {
+		std::ofstream myfile;
+		myfile.open(&outname[0], std::ofstream::app | std::ofstream::out);
+		myfile << output;
+		myfile.close();
+	}
+
 	return res;
 }
