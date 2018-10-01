@@ -43,7 +43,7 @@ to generate fisheye file. Para basepath is the base path of input.
 Inpath is the path of the current directory. Output is the output string.
 */
 int recursiveLoad(const string &basepath
-	, const string& inpath, std::string &outname, Fisheye &fisheye) {
+	, const string& inpath, std::string &outname, Fisheye &fisheye, int flag) {
 	fs::path filepath(inpath);
 	string inDir;
 	fs::path base(basepath);
@@ -73,7 +73,7 @@ int recursiveLoad(const string &basepath
 			std::clock_t start;
 			double duration;
 			start = std::clock();
-			int count = recursiveLoad(basepath, temp, outname, fisheye);
+			int count = recursiveLoad(basepath, temp, outname, fisheye, flag);
 			duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 			dir_count++;
 			std::cout << "Finished processing files in folder " << temp << std::endl;
@@ -118,7 +118,7 @@ int recursiveLoad(const string &basepath
 				tile[tile.find('_')] = ',';
 			}
 			output += tile + name;
-			fisheye.getVF(file_name_path, data, output);
+			fisheye.getVF(file_name_path, data, output, flag);
 
 			/*for (int i = 0; i < 6; i++) {
 				string data_path = file_name_path + postfix[i];
@@ -162,7 +162,7 @@ const string postfix_fc[6] = {
 };
 
 int recursiveLoad(const string &basepath
-	, const string& inpath, std::string &outname) {
+	, const string& inpath, std::string &outname, int flag) {
 	fs::path filepath(inpath);
 	string inDir;
 	fs::path base(basepath);
@@ -190,7 +190,7 @@ int recursiveLoad(const string &basepath
 			std::clock_t start;
 			double duration;
 			start = std::clock();
-			int count = recursiveLoad(basepath, temp, outname);
+			int count = recursiveLoad(basepath, temp, outname, flag);
 			duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 			dir_count++;
 			std::cout << "Finished processing files in folder " << temp << std::endl;
@@ -241,9 +241,10 @@ int recursiveLoad(const string &basepath
 			for (int i = 0; i < 6; i++) {
 				string data_path = file_name_path + postfix_fc[i];
 				decompress(data_path, data, 512 * 512);
-				string vf = calculate(data);
+				string vf = calculate(data, flag);
 
 				output = output + vf;
+				if (flag) break;
 			}
 			
 			delete[] data;

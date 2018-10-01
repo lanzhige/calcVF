@@ -87,12 +87,13 @@ int init() {
 	return 0;
 }
 
-string calculate(unsigned char *data) {
+string calculate(unsigned char *data, int flag) {
 	string res = "";
 	vector<vector<int>> p = calculate_P(data);
 	for (int i = 0; i < 6; i++) {
 		double vf = calculate_SVF(svf_max, p[i]);
 		res = res + "," + std::to_string(vf);
+		if (flag) break;
 	}
 	return res;
 }

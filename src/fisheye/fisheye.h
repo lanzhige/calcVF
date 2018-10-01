@@ -151,7 +151,7 @@ public:
 		return 0;
 	}
 
-	int getVF(const string &filename, unsigned char *data, string &output) {
+	int getVF(const string &filename, unsigned char *data, string &output, int flag) {
 		vector<string> faces;
 		for (int i = 0; i < 6; i++) {
 			string s = filename + bin_postfix[i];
@@ -194,9 +194,10 @@ public:
 
 			glReadnPixels(0, 0, WIDTH, HEIGHT, GL_RED, GL_UNSIGNED_BYTE
 				, WIDTH * HEIGHT * sizeof(unsigned char), data);
-			output += calculate(data);
+			output += calculate(data, flag);
 
 			glfwSwapBuffers(window);
+			if (flag) break;
 		}
 		glDeleteTextures(1, &cubemapTexture);
 		return 0;
